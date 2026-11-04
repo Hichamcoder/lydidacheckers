@@ -72,7 +72,7 @@ static func legal_moves(board: Array, side: int, rules: int) -> Array[Dictionary
 			for to in _quiet_destinations(board, from, piece, side, rules):
 				quiet.append({
 					"from": from, "to": to, "path": [from, to],
-					"captures": [], "captured_kings": 0
+					"captures": []
 				})
 	return quiet
 
