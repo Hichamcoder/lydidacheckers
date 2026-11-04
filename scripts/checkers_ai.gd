@@ -1,7 +1,7 @@
 extends RefCounted
 class_name CheckersAI
 
-const Engine = preload("res://scripts/checkers_engine.gd")
+const RulesEngine = preload("res://scripts/checkers_engine.gd")
 const INF := 10000000
 const WIN_SCORE := 100000
 
@@ -14,7 +14,7 @@ func choose_move(board: Array, side: int, rules: int, max_depth: int = 6,
 	_nodes = 0
 	_node_limit = maxi(1000, node_limit)
 	_table.clear()
-	var moves := Engine.legal_moves(board, side, rules)
+	var moves := RulesEngine.legal_moves(board, side, rules)
 	if moves.is_empty():
 		return {}
 	moves.sort_custom(func(a: Dictionary, b: Dictionary) -> bool:
@@ -26,7 +26,7 @@ func choose_move(board: Array, side: int, rules: int, max_depth: int = 6,
 		var iteration_score := -INF
 		var alpha := -INF
 		for move in moves:
-			var next_board := Engine.apply_move(board, move, side)
+			var next_board := RulesEngine.apply_move(board, move, side)
 			var score := _search(next_board, -side, side, rules, depth - 1, alpha, INF, 1)
 			if score > iteration_score:
 				iteration_score = score
@@ -42,9 +42,9 @@ func choose_move(board: Array, side: int, rules: int, max_depth: int = 6,
 func _search(board: Array, side: int, root: int, rules: int, depth: int,
 		alpha_in: int, beta_in: int, ply: int) -> int:
 	if _nodes >= _node_limit:
-		return Engine.evaluate(board, root)
+		return RulesEngine.evaluate(board, root)
 	_nodes += 1
-	var moves := Engine.legal_moves(board, side, rules)
+	var moves := RulesEngine.legal_moves(board, side, rules)
 	if moves.is_empty():
 		return -WIN_SCORE + ply if side == root else WIN_SCORE - ply
 
@@ -68,7 +68,7 @@ func _search(board: Array, side: int, root: int, rules: int, depth: int,
 				return cached
 
 	if depth <= 0:
-		return Engine.evaluate(board, root)
+		return RulesEngine.evaluate(board, root)
 
 	moves.sort_custom(func(a: Dictionary, b: Dictionary) -> bool:
 		return _order_score(a) > _order_score(b)
@@ -76,7 +76,7 @@ func _search(board: Array, side: int, root: int, rules: int, depth: int,
 	var maximizing := side == root
 	var best_score := -INF if maximizing else INF
 	for move in moves:
-		var child := Engine.apply_move(board, move, side)
+		var child := RulesEngine.apply_move(board, move, side)
 		var score := _search(child, -side, root, rules, depth - 1, alpha, beta, ply + 1)
 		if maximizing:
 			best_score = maxi(best_score, score)

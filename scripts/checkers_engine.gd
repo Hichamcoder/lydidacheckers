@@ -115,8 +115,7 @@ static func _collect_captures(board: Array, origin: Vector2i, current: Vector2i,
 		if not captured.is_empty():
 			output.append({
 				"from": origin, "to": current, "path": path.duplicate(),
-				"captures": captured.duplicate(),
-				"captured_kings": _count_captured_kings(board, captured)
+				"captures": captured.duplicate()
 			})
 		return
 
@@ -137,8 +136,7 @@ static func _collect_captures(board: Array, origin: Vector2i, current: Vector2i,
 		if abs(piece) == 1 and _promotion_row(landing.y, side):
 			output.append({
 				"from": origin, "to": landing, "path": next_path,
-				"captures": next_captured,
-				"captured_kings": _count_captured_kings_from_list(board, next_captured, victim_piece)
+				"captures": next_captured
 			})
 		else:
 			_collect_captures(board, origin, landing, piece, side, rules,
@@ -204,15 +202,6 @@ static func _directions(piece: int, side: int, rules: int, is_capture: bool) -> 
 		]
 	var forward := -1 if side > 0 else 1
 	return [Vector2i(-1, forward), Vector2i(1, forward)]
-
-static func _count_captured_kings(board: Array, captured: Array) -> int:
-	# Captured pieces have already been removed from the search board. This helper
-	# is retained for the list-based tally fallback used by promotion termination.
-	return 0
-
-static func _count_captured_kings_from_list(board: Array, captured: Array, last_piece: int) -> int:
-	# Captured-piece priority is not used in Spanish rules in this implementation.
-	return 0
 
 static func _playable(y: int, x: int) -> bool:
 	return (y + x) % 2 == 1

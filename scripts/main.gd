@@ -1,6 +1,6 @@
 extends Control
 
-const Engine = preload("res://scripts/checkers_engine.gd")
+const RulesEngine = preload("res://scripts/checkers_engine.gd")
 const AI = preload("res://scripts/checkers_ai.gd")
 
 const BG := Color("#101820")
@@ -14,7 +14,7 @@ const GOLD := Color("#D5A45B")
 const MUTED := Color("#A6B4B7")
 
 var screen := "home"
-var rules := Engine.ENGLISH
+var rules := RulesEngine.ENGLISH
 var difficulty := 5
 var board: Array = []
 var side_to_move := 1
@@ -58,9 +58,9 @@ func _draw_home() -> void:
 
 	english_rect = Rect2(Vector2(22, size.y * 0.39), Vector2(size.x - 44, 94))
 	spanish_rect = Rect2(Vector2(22, size.y * 0.52), Vector2(size.x - 44, 94))
-	_button(english_rect, "ENGLISH CHECKERS", rules == Engine.ENGLISH)
+	_button(english_rect, "ENGLISH CHECKERS", rules == RulesEngine.ENGLISH)
 	_text("Short-range kings · mandatory captures", english_rect.position + Vector2(18, 68), 14, MUTED)
-	_button(spanish_rect, "SPANISH DRAUGHTS", rules == Engine.SPANISH)
+	_button(spanish_rect, "SPANISH DRAUGHTS", rules == RulesEngine.SPANISH)
 	_text("Flying kings · maximum capture", spanish_rect.position + Vector2(18, 68), 14, MUTED)
 
 	_text("AI LEVEL", Vector2(28, size.y * 0.69), 16, GOLD)
@@ -78,7 +78,7 @@ func _draw_home() -> void:
 
 func _draw_game() -> void:
 	_text("LYDIDA CHECKERS", Vector2(22, 54), 22, GOLD)
-	_text("ENGLISH CHECKERS" if rules == Engine.ENGLISH else "SPANISH DRAUGHTS",
+	_text("ENGLISH CHECKERS" if rules == RulesEngine.ENGLISH else "SPANISH DRAUGHTS",
 		Vector2(22, 84), 14, MUTED)
 	var turn := message
 	if not game_finished and not is_ai_thinking:
@@ -158,10 +158,10 @@ func _gui_input(event: InputEvent) -> void:
 func _handle_tap(point: Vector2) -> void:
 	if screen == "home":
 		if english_rect.has_point(point):
-			rules = Engine.ENGLISH
+			rules = RulesEngine.ENGLISH
 			_start_game()
 		elif spanish_rect.has_point(point):
-			rules = Engine.SPANISH
+			rules = RulesEngine.SPANISH
 			_start_game()
 		elif tactical_rect.has_point(point):
 			difficulty = 3
@@ -189,7 +189,7 @@ func _handle_tap(point: Vector2) -> void:
 		_handle_board_square(Vector2i(x, y))
 
 func _start_game() -> void:
-	board = Engine.initial_board()
+	board = RulesEngine.initial_board()
 	side_to_move = 1
 	selected = Vector2i(-1, -1)
 	candidate_moves.clear()
@@ -227,7 +227,7 @@ func _handle_board_square(square: Vector2i) -> void:
 	var piece := int(board[square.y][square.x])
 	if piece > 0:
 		candidate_moves.clear()
-		for move in Engine.legal_moves(board, 1, rules):
+		for move in RulesEngine.legal_moves(board, 1, rules):
 			if move["from"] == square:
 				candidate_moves.append(move)
 		selected = square if not candidate_moves.is_empty() else Vector2i(-1, -1)
@@ -238,12 +238,12 @@ func _handle_board_square(square: Vector2i) -> void:
 	queue_redraw()
 
 func _commit_human_move(move: Dictionary) -> void:
-	board = Engine.apply_move(board, move, 1)
+	board = RulesEngine.apply_move(board, move, 1)
 	selected = Vector2i(-1, -1)
 	candidate_moves.clear()
 	route_step = 1
 	side_to_move = -1
-	if Engine.legal_moves(board, -1, rules).is_empty():
+	if RulesEngine.legal_moves(board, -1, rules).is_empty():
 		game_finished = true
 		message = "YOU WIN"
 		_save_position()
@@ -258,7 +258,7 @@ func _run_ai_turn() -> void:
 	queue_redraw()
 	var ai := AI.new()
 	var worker := Thread.new()
-	var snapshot := Engine.copy_board(board)
+	var snapshot := RulesEngine.copy_board(board)
 	var start_error := worker.start(Callable(ai, "choose_move").bind(snapshot, -1, rules, difficulty, 30000))
 	if start_error != OK:
 		is_ai_thinking = false
@@ -273,9 +273,9 @@ func _run_ai_turn() -> void:
 		game_finished = true
 		message = "YOU WIN"
 	else:
-		board = Engine.apply_move(board, move, -1)
+		board = RulesEngine.apply_move(board, move, -1)
 		side_to_move = 1
-		if Engine.legal_moves(board, 1, rules).is_empty():
+		if RulesEngine.legal_moves(board, 1, rules).is_empty():
 			game_finished = true
 			message = "AI WINS"
 		else:
@@ -284,14 +284,14 @@ func _run_ai_turn() -> void:
 	queue_redraw()
 
 func _save_position() -> void:
-	history.append({"board": Engine.copy_board(board), "side": side_to_move})
+	history.append({"board": RulesEngine.copy_board(board), "side": side_to_move})
 
 func _undo_turn() -> void:
 	if is_ai_thinking or history.size() < 2:
 		return
 	history.pop_back()
 	var previous: Dictionary = history[history.size() - 1]
-	board = Engine.copy_board(previous["board"])
+	board = RulesEngine.copy_board(previous["board"])
 	side_to_move = int(previous["side"])
 	selected = Vector2i(-1, -1)
 	candidate_moves.clear()
