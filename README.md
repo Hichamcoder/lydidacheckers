@@ -1,24 +1,23 @@
 # LYDIDA Checkers
 
-An offline-first checkers game project built with Godot 4.7.2.
+Offline-first 8×8 checkers with two distinct rulesets, built in Godot 4.7.2.
 
-## Project scope
+## Included in this milestone
 
-- English checkers and Spanish draughts rule sets.
-- Human-versus-AI play with a bounded alpha-beta search engine.
-- Touch-first Android interface.
-- Automated rules/AI tests and Android debug APK build pipeline.
+- English checkers and Spanish 64-square draughts.
+- Compulsory captures, multi-capture paths and promotion.
+- Spanish flying kings and maximum-capture selection.
+- Human versus AI play using bounded alpha-beta search.
+- Touch-focused board UI, undo and restart.
+- Automated smoke tests for rule differences and AI move legality.
+- GitHub Actions workflow that runs Godot tests and attempts an Android API 36 debug APK export.
 
-## Build
+## Build and run
 
-1. Install Godot 4.7.2 and its matching export templates.
-2. Open this repository in Godot.
-3. Run the project from the editor.
-4. For Android, install JDK 17 and the Android SDK components specified in `docs/ANDROID_RELEASE.md`.
-5. Use the `Android Debug` export preset or the GitHub Actions workflow.
+Open the repository in Godot 4.7.2 and run the main scene. For Android, install Godot's matching export templates, JDK 17 and the Android SDK components documented in docs/ANDROID_RELEASE.md.
 
 ## Release status
 
-This repository is the source of truth for development. A debug APK is for testing only. Production release requires physical-device validation, an owner-controlled release keystore, a signed Android App Bundle, store assets, privacy/support information and Play Console testing. Do not commit keystores or passwords.
+A successful debug APK export is not a production Play Store release. Release requires device testing, a separately managed signing keystore, a signed AAB, store assets, privacy/support information and Play Console internal testing.
 
-Firebase, online accounts and multiplayer are not configured in the current offline-first milestone. The AI is not claimed to be unbeatable; competitive strength must be measured through independent matches and benchmarks.
+No Firebase credentials, keystore, or Play Console credentials are stored here. The game runs locally and does not need an account for this milestone. The AI is a search-based opponent; it is not claimed to be unbeatable.
