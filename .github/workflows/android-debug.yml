@@ -55,8 +55,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          yes | sdkmanager --licenses >/dev/null
-          sdkmanager "platform-tools" "platforms;android-36" "build-tools;36.0.0" "cmdline-tools;latest" "ndk;28.1.13356709" "cmake;3.10.2.4988404"
+          sdkmanager "platforms;android-36" "build-tools;36.0.0" "ndk;28.1.13356709" "cmake;3.10.2.4988404"
 
       - name: Export debug APK
         shell: bash
